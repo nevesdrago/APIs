@@ -23,3 +23,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.init_options]
 pythonpath = ["."]
+
+[tool.poetry.group.dev.dependencies]
+httpx = "^0.28.1"
+
