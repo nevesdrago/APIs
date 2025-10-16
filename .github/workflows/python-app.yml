@@ -34,6 +34,7 @@ jobs:
       run: |
         pip install poetry
     - name: Install Poetry Dependencies
+      working-directory: "./API Pokemon"
       run: poetry install --no-interaction --no-root
     - name: Docker Image
       run: docker build -f "API Pokemon/Dockerfile" "API Pokemon"
