@@ -6,7 +6,7 @@ name: Api pokemon
 on:
   push:
     paths:
-      - 'API pokemon/**'
+      - 'API Pokemon/**'
   pull_request:
     paths:
       - 'API Pokemon/**'
