@@ -1,0 +1,25 @@
+[project]
+name = "apipokemon"
+version = "0.1.0"
+description = "API pokemon com PokeAPI"
+authors = [
+    {name = "Eduardo Drago",email = "eduardondrago05@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi (>=0.118.2,<0.119.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)",
+    "redis (>=6.4.0,<7.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.init_options]
+pythonpath = ["."]
