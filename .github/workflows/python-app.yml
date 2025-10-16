@@ -5,9 +5,11 @@ name: Api pokemon
 
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - 'API pokemon/**'
   pull_request:
-    branches: [ "main" ]
+    paths:
+      - 'API Pokemon/**'
 
 permissions:
   contents: read
