@@ -39,5 +39,6 @@ jobs:
     - name: Docker Image
       run: docker build -f "API Pokemon/Dockerfile" "API Pokemon"
     - name: Test with pytest
+      working-directory: "./API Pokemon"
       run: |
         poetry run pytest
