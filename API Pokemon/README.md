@@ -5,7 +5,7 @@ Este projeto é uma API RESTful em Python que consome os dados da famosa API Pok
 
 1. Clone o **repositório**:
 ```
-git clone <url-do-repositório>
+git clone (https://github.com/nevesdrago/APIs/tree/main/API%20Pokemon)
 cd API Pokemon
 ```
 
@@ -77,7 +77,7 @@ This project is a Python RESTful API, that uses data from PokéAPI, returning th
 
 1. Clone the **repository**:
 ```
-git clone <url-do-repositório>
+git clone (https://github.com/nevesdrago/APIs/tree/main/API%20Pokemon)
 cd API Pokemon
 ```
 
@@ -139,6 +139,7 @@ The tests will validate the main endpoints, pagination, parameter validation and
 ## Production Link
 
 (link)
+
 
 
 
