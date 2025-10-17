@@ -1,12 +1,30 @@
 # Import Fastapi, framework que facilita a criação de APIs
 from fastapi import FastAPI, HTTPException
 import redis
-import json 
+import time
+import logging
+import json
+import os 
 import requests
 app = FastAPI()
-redis_client = redis.Redis(host='redis', port=6379, db= 0, decode_responses=True)
 url_base = "https://pokeapi.co/api/v2/"
 
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
+def connect_redis(url, retries=3, delay=2):
+    for attempt in range(1, retries + 1):
+        try:
+            client = redis.from_url(url, decode_responses=True)
+            client.ping()  # valida a conexão
+            logging.info("Redis conectado com sucesso.")
+            return client
+        except Exception as e:
+            logging.warning(f"Tentativa {attempt}/{retries} de conectar ao Redis falhou: {e}")
+            time.sleep(delay)
+    logging.error("Não foi possível conectar ao Redis; seguindo sem cache.")
+    return None
+
+redis_client = connect_redis(REDIS_URL)
 
 @app.get("/cache")
 def pokemon_cache():
@@ -27,12 +45,15 @@ async def get_pokemons(limit: int = 20, offset: int = 0):
     resposta = requests.get(url)
     dados_pokemons = resposta.json()
     pokemons = dados_pokemons["results"]
+
     if limit < 1 or offset < 0:
         raise HTTPException(status_code=400, detail="Valores inválidos.")
+    
     cache_key = f"pokemons:offset={offset}&limit={limit}"
     cached = redis_client.get(cache_key)
     if cached:
         return json.loads(cached)
+    
     if resposta.status_code == 200:
         resultado = {
             "data": pokemons,
@@ -57,6 +78,7 @@ async def get_pokemons(limit: int = 20, offset: int = 0):
 async def get_pokemons_id(id: int):
     if id > 1025 or id < 1:
         raise HTTPException(status_code=404, detail="Pokémon não encontrado.")
+    
     url = f"{url_base}/pokemon/{id}"
     resposta = requests.get(url)
     dados_pokemon = resposta.json()
