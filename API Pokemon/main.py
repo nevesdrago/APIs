@@ -6,6 +6,8 @@ import logging
 import json
 import os 
 import requests
+
+logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 url_base = "https://pokeapi.co/api/v2/"
 
@@ -15,27 +17,34 @@ def connect_redis(url, retries=3, delay=2):
     for attempt in range(1, retries + 1):
         try:
             client = redis.from_url(url, decode_responses=True)
-            client.ping()  # valida a conexão
+            client.ping()  
             logging.info("Redis conectado com sucesso.")
             return client
         except Exception as e:
             logging.warning(f"Tentativa {attempt}/{retries} de conectar ao Redis falhou: {e}")
             time.sleep(delay)
-    logging.error("Não foi possível conectar ao Redis; seguindo sem cache.")
+    logging.error("Não foi possível conectar ao Redis. Seguindo sem cache.")
     return None
 
 redis_client = connect_redis(REDIS_URL)
 
 @app.get("/cache")
 def pokemon_cache():
+    if not redis_client:
+        logging.warning("/Redis não está disponível.")
+        return {"message": "Redis não disponível"}
+    
     chaves = redis_client.keys("pokemons:*")
     pokemons = []
 
     for chave in chaves:
-        valor = redis_client.get(chave)
-        ttl = redis_client.ttl(chave)
-        pokemons.append({"chave": chave, "valor": json.loads(valor), "ttl": ttl})
-
+        try:
+            valor = redis_client.get(chave)
+            ttl = redis_client.ttl(chave)
+            pokemons.append({"chave": chave, "valor": json.loads(valor), "ttl": ttl})
+        except Exception as e:
+            logging.warning(f"Erro ao ler chave do Redis: {e}")
+            
     return pokemons
 
 # Endpoint GET que retornará os dados dos Pokémons
@@ -50,10 +59,18 @@ async def get_pokemons(limit: int = 20, offset: int = 0):
         raise HTTPException(status_code=400, detail="Valores inválidos.")
     
     cache_key = f"pokemons:offset={offset}&limit={limit}"
-    cached = redis_client.get(cache_key)
+    try:
+        cached = redis_client.get(cache_key)
+    except Exception as e:
+        logging.warning(f"Erro ao acessar cache: {e}")
+        cached = None
+
     if cached:
-        return json.loads(cached)
-    
+        try:
+            return json.loads(cached)
+        except Exception:
+            logging.warning("Cache inválido")
+
     if resposta.status_code == 200:
         resultado = {
             "data": pokemons,
@@ -65,8 +82,11 @@ async def get_pokemons(limit: int = 20, offset: int = 0):
                 "previous": f"localhost:8000/pokemons?limit={limit}&offset={max(offset - limit, 0)}", # placeholder, arrumar problema de numeros negativos
             }
         }
-
-        redis_client.setex(cache_key, 90, json.dumps(resultado))
+        if redis_client:
+            try:    
+                redis_client.setex(cache_key, 90, json.dumps(resultado))
+            except Exception as e:
+                logging.warning(f"Erro ao escrever no Redis. {e}")
 
         return resultado
     else:
@@ -84,9 +104,17 @@ async def get_pokemons_id(id: int):
     dados_pokemon = resposta.json()
 
     cache_key = f"pokemons:{id}"
-    cached = redis_client.get(cache_key)
+    try: 
+        cached = redis_client.get(cache_key) if redis_client else None
+    except Exception as e:
+        logging.warning(f"Erro ao acessar cache: {e}")
+        cached = None
+
     if cached:
-        return json.loads(cached)
+        try:
+            return json.loads(cached)
+        except Exception:
+            logging.warning("Cache inválido.")
     
     if resposta.status_code == 200:
         sprites = dados_pokemon["sprites"]
@@ -103,9 +131,12 @@ async def get_pokemons_id(id: int):
             "types": tipos,
             "sprites": sprites_selecionados    
         }
+        if redis_client:
+            try:
+                redis_client.setex(cache_key, 90, json.dumps(paginacao))
+            except Exception as e:
+                logging.warning(f"Falha ao escrever no Redis: {e}")
 
-        redis_client.setex(cache_key, 90, json.dumps(paginacao))
-        
         return paginacao
     else:
         return {"message": f"Falha ao retornar dados. {resposta.status_code}"}
