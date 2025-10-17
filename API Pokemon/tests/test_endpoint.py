@@ -52,5 +52,5 @@ def test_get_pokemons_paginacao_correta():
     assert paginacao["limit"] == limit
     assert paginacao["offset"] == offset
     assert paginacao["total"] == 1025
-    assert paginacao["next"] == f"localhost:8000/pokemons?limit={limit}&offset={offset + limit}"
-    assert paginacao["previous"] == f"localhost:8000/pokemons?limit={limit}&offset={max(offset - limit, 0)}"
+    assert paginacao["next"] == f"https://apis-gsuq.onrender.com/pokemons?limit={limit}&offset={offset + limit}"
+    assert paginacao["previous"] == f"https://apis-gsuq.onrender.com/pokemons?limit={limit}&offset={max(offset - limit, 0)}"
