@@ -67,7 +67,7 @@ Os testes validarão os principais endpoints, paginação, validação de parâm
 
 ## Link de produção
 
-(link)
+https://apis-gsuq.onrender.com/pokemons
 
 # Pokémon API - ENG
 
@@ -138,7 +138,8 @@ The tests will validate the main endpoints, pagination, parameter validation and
 
 ## Production Link
 
-(link)
+(https://apis-gsuq.onrender.com/pokemons)
+
 
 
 
