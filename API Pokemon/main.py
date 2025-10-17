@@ -78,8 +78,8 @@ async def get_pokemons(limit: int = 20, offset: int = 0):
                 "total": 1025,
                 "limit": limit,
                 "offset": offset,
-                "next": f"localhost:8000/pokemons?limit={limit}&offset={offset + limit}",
-                "previous": f"localhost:8000/pokemons?limit={limit}&offset={max(offset - limit, 0)}", # placeholder, arrumar problema de numeros negativos
+                "next": f"https://apis-gsuq.onrender.com/pokemons?limit={limit}&offset={offset + limit}",
+                "previous": f"https://apis-gsuq.onrender.com/pokemons?limit={limit}&offset={max(offset - limit, 0)}", # placeholder, arrumar problema de numeros negativos
             }
         }
         if redis_client:
