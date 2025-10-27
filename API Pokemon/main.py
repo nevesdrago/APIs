@@ -18,11 +18,25 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/pokemons.db")
 
 if DATABASE_URL.startswith("sqlite:///"):
     db_path = DATABASE_URL.replace("sqlite:///", "", 1)
-    db_dir = os.path.dirname(db_path) or "."
+    if not os.path.isabs(db_path):
+        db_path = os.path.abspath(db_path)
+        DATABASE_URL = "sqlite:///" + db_path 
+    db_dir = os.path.dirname(db_path) or "." 
     try:
-        os.makedirs(db_dir, exist_ok = True)
+        os.makedirs(db_dir, exist_ok=True)
+        logging.info(f"Diretório do DB garantido: {db_dir}")
     except Exception as e:
         logging.error(f"Falha ao criar diretório do banco ({db_dir}): {e}")
+
+@app.on_event("startup")
+def startup_create_tables():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logging.info("Tabelas criadas/verificadas com sucesso.")
+    except Exception as e:
+        logging.error(f"Erro ao criar tabelas no startup: {e}")
+
+
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -39,8 +53,6 @@ class Pokemon(BaseModel):
     name: str
     weight: int
     height: int   
-
-Base.metadata.create_all(bind=engine)
 
 def sessao_db():
     db = SessionLocal()
