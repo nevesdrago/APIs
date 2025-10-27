@@ -7,21 +7,21 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
-services:
-  server:
-    build:
-      context: .
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
-    depends_on:
-    - redis
 
-  redis:
-    image: redis:7-alpine
-    container_name: pokeredis
+services:
+  app:
+    build: .
+    container_name: pokemon_api
     ports:
-      - "6379:6379"
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    volumes:
+      - .data:/app/data
+    command: 
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 

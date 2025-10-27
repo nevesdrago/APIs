@@ -5,7 +5,7 @@ Este projeto é uma API RESTful em Python que consome os dados da famosa API Pok
 
 1. Clone o **repositório**:
 ```
-git clone (https://github.com/nevesdrago/APIs/tree/main/API%20Pokemon)
+git clone <url-do-repositório>
 cd API Pokemon
 ```
 
@@ -51,6 +51,26 @@ docker compose up --build
     } 
 }
 ```
+3. Endpoints CRUD
+
+3.1. No endpoint `/pokemons/`, você pode adicionar novos Pokémons usando o seguinte modelo:
+```json
+{
+	"name": "bulbasaur",
+	"weight": 80,
+	"height": 4
+}
+```
+
+3.2. Da mesma maneira, no endpoint `/pokemons/{id}`, você pode fazer uma requisição PUT e atualizar os dados do Pokémon.
+```json
+{
+	"name": "bulbasaur",
+	"weight": 80,
+	"height": 4
+}
+```
+3.3 Por fim, especificando por ID, no endpoint `/pokemons/{id}`, você pode fazer uma requisição DELETE e deletar os dados do Pokémon adicionado.
 
 ## Execução de testes
 
@@ -67,7 +87,7 @@ Os testes validarão os principais endpoints, paginação, validação de parâm
 
 ## Link de produção
 
-https://apis-gsuq.onrender.com/pokemons
+(link)
 
 # Pokémon API - ENG
 
@@ -77,7 +97,7 @@ This project is a Python RESTful API, that uses data from PokéAPI, returning th
 
 1. Clone the **repository**:
 ```
-git clone (https://github.com/nevesdrago/APIs/tree/main/API%20Pokemon)
+git clone <url-do-repositório>
 cd API Pokemon
 ```
 
@@ -122,6 +142,30 @@ docker compose up --build
     } 
 }
 ```
+3. CRUD Endpoints
+
+3.1. Using a POST http request, you can add new Pokémon information using `/pokemons/` endpoint with this JSON format:
+
+```json
+{
+	"name": "bulbasaur",
+	"weight": 80,
+	"height": 4
+}
+```
+
+3.2. Similarly, a PUT http request will allow you to update already added Pokémon information. You must specify the Pokémon ID. `/pokemons/{id}`
+
+```json
+{
+	"name": "bulbasaur",
+	"weight": 80,
+	"height": 4
+}
+```
+
+3.3. A DELETE http request allows you to delete the specified Pokémon's information. `/pokemons/{id}`
+
 
 ## Tests
 
@@ -138,9 +182,7 @@ The tests will validate the main endpoints, pagination, parameter validation and
 
 ## Production Link
 
-(https://apis-gsuq.onrender.com/pokemons)
-
-
+(link)
 
 
 
