@@ -24,10 +24,16 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-
+@app.on_event("startup")
+def startup_create_tables():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logging.info("Tabelas criadas/verificadas com sucesso.")
+    except Exception as e:
+        logging.error(f"Erro ao criar/verificar tabelas no startup: {e}")
 
 class PokemonDB(Base):
-    __tablename__ = "Pokemons"
+    __tablename__ = "pokemons"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     weight = Column(Integer, index=True)
