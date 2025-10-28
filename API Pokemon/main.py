@@ -14,7 +14,8 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 url_base = "https://pokeapi.co/api/v2/"
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL") or "sqlite:///./data/pokemons.db"
+
 
 engine = create_engine(
     DATABASE_URL,
