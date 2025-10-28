@@ -14,33 +14,17 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 url_base = "https://pokeapi.co/api/v2/"
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/pokemons.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL.startswith("sqlite:///"):
-    db_path = DATABASE_URL.replace("sqlite:///", "", 1)
-    if not os.path.isabs(db_path):
-        db_path = os.path.abspath(db_path)
-        DATABASE_URL = "sqlite:///" + db_path 
-    db_dir = os.path.dirname(db_path) or "." 
-    try:
-        os.makedirs(db_dir, exist_ok=True)
-        logging.info(f"Diretório do DB garantido: {db_dir}")
-    except Exception as e:
-        logging.error(f"Falha ao criar diretório do banco ({db_dir}): {e}")
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+)
 
-@app.on_event("startup")
-def startup_create_tables():
-    try:
-        Base.metadata.create_all(bind=engine)
-        logging.info("Tabelas criadas/verificadas com sucesso.")
-    except Exception as e:
-        logging.error(f"Erro ao criar tabelas no startup: {e}")
-
-
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+
 
 class PokemonDB(Base):
     __tablename__ = "Pokemons"
